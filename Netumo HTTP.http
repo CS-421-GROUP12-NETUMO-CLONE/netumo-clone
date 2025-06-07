@@ -1,0 +1,39 @@
+#TARGETS ENDPOINTS
+### GET targets
+GET http://localhost:8000/api/targets
+
+### CREATE target
+POST http://localhost:8000/api/targets
+Content-Type: application/json
+
+{
+    "user_id": "1",
+    "name": "atare ",
+    "url": "https://atare.or.tz"
+}
+
+### GET single target
+GET http://localhost:8000/api/targets/2
+
+### UPDATE target
+PUT http://localhost:8000/api/targets/1
+Content-Type: application/json
+
+{
+    "name": "test updated",
+    "url": "http://test.com"
+}
+
+### DELETE target
+DELETE http://localhost:8000/api/targets/1
+
+### Latest check result
+GET http://localhost:8000/api/status/2
+
+### 24h history
+GET http://localhost:8000/api/history/2
+
+### All triggered alerts
+GET http://localhost:8000/api/alerts
+
+
