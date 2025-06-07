@@ -4,6 +4,7 @@ services:
     # Load Balancer
     nginx:
         image: nginx:alpine
+        container_name: netumo_nginx
         ports:
             - "80:80"
         volumes:
@@ -20,6 +21,7 @@ services:
         build:
             context: .
             dockerfile: docker/php/Dockerfile
+        container_name: netumo_app1
         volumes:
             - .:/var/www
         env_file:
@@ -40,6 +42,7 @@ services:
         build:
             context: .
             dockerfile: docker/php/Dockerfile
+        container_name: netumo_app2
         volumes:
             - .:/var/www
         env_file:
@@ -55,6 +58,7 @@ services:
         build:
             context: .
             dockerfile: docker/php/Dockerfile
+        container_name: netumo_worker
         command: php artisan queue:work --tries=3
         volumes:
             - .:/var/www
@@ -71,6 +75,7 @@ services:
         build:
             context: .
             dockerfile: docker/php/Dockerfile
+        container_name: netumo_scheduler
         command: sh -c "while [ true ]; do php artisan schedule:run --verbose --no-interaction & sleep 60; done"
         volumes:
             - .:/var/www
@@ -85,6 +90,7 @@ services:
     # MySQL
     mysql:
         image: mysql:8.0
+        container_name: netumo_mysql
         ports:
             - "3306:3306"
         environment:
@@ -100,6 +106,7 @@ services:
     # Redis
     redis:
         image: redis:alpine
+        container_name: netumo_redis
         ports:
             - "6379:6379"
         volumes:
