@@ -18,7 +18,9 @@ services:
 
     # netumo clone App 1
     app1:
-        image: edibily12/netumo_app1:latest
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
         container_name: netumo_app1
         volumes:
             - .:/var/www
@@ -37,7 +39,9 @@ services:
 
     # Netumo clone App 2
     app2:
-        image: edibily12/netumo_app2:latest
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
         container_name: netumo_app2
         volumes:
             - .:/var/www
@@ -51,7 +55,9 @@ services:
 
     # Queue Worker
     worker:
-        image: edibily12/netumo_worker:latest
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
         container_name: netumo_worker
         command: php artisan queue:work --tries=3
         volumes:
@@ -66,7 +72,9 @@ services:
 
     # Scheduler
     scheduler:
-        image: edibily12/netumo_scheduler:latest
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
         container_name: netumo_scheduler
         command: sh -c "while [ true ]; do php artisan schedule:run --verbose --no-interaction & sleep 60; done"
         volumes:
