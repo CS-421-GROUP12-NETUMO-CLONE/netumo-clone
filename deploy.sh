@@ -74,6 +74,10 @@ case "$1" in
     echo "Copying public/build to Docker container..."
     docker cp public/build $CONTAINER:/var/www/public
     ;;
+  chmod)
+    echo "Change permission to bootstrap file"
+    docker exec -it $CONTAINER chown -R www-data:www-data storage bootstrap/cache
+    ;;
   help|*)
     help
     ;;
