@@ -15,13 +15,6 @@ services:
             - app2
         networks:
             - netumo_clone_net
-    vite:
-        image: node:20
-        container_name: netumo_vite_builder
-        working_dir: /app
-        volumes:
-            - .:/app
-        command: sh -c "npm install && npm run build"
 
     # netumo clone App 1
     app1:
@@ -36,7 +29,6 @@ services:
         depends_on:
             - mysql
             - redis
-            - vite
         healthcheck:
             test: ["CMD", "curl", "-f", "http://localhost"]
             interval: 30s
@@ -56,7 +48,6 @@ services:
         depends_on:
             - mysql
             - redis
-            - vite
 
     # Queue Worker
     worker:
