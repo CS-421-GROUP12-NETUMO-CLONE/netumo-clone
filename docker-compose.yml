@@ -16,12 +16,22 @@ services:
         networks:
             - netumo_clone_net
 
+    vite:
+        image: node:20
+        container_name: netumo_vite_builder
+        working_dir: /app
+        volumes:
+            - .:/app
+        command: sh -c "npm install && npm run build"
+
     # netumo clone App 1
     app1:
         build:
             context: .
             dockerfile: docker/php/Dockerfile
         container_name: netumo_app1
+        volumes:
+            - .:/var/www
         env_file:
             - .env
         networks:
@@ -29,6 +39,7 @@ services:
         depends_on:
             - mysql
             - redis
+            - vite
         healthcheck:
             test: ["CMD", "curl", "-f", "http://localhost"]
             interval: 30s
@@ -41,6 +52,8 @@ services:
             context: .
             dockerfile: docker/php/Dockerfile
         container_name: netumo_app2
+        volumes:
+            - .:/var/www
         env_file:
             - .env
         networks:
@@ -48,6 +61,7 @@ services:
         depends_on:
             - mysql
             - redis
+            - vite
 
     # Queue Worker
     worker:
@@ -56,6 +70,8 @@ services:
             dockerfile: docker/php/Dockerfile
         container_name: netumo_worker
         command: php artisan queue:work --tries=3
+        volumes:
+            - .:/var/www
         env_file:
             - .env
         networks:
@@ -71,6 +87,8 @@ services:
             dockerfile: docker/php/Dockerfile
         container_name: netumo_scheduler
         command: sh -c "while [ true ]; do php artisan schedule:run --verbose --no-interaction & sleep 60; done"
+        volumes:
+            - .:/var/www
         env_file:
             - .env
         networks:
