@@ -53,6 +53,12 @@ case "$1" in
   schedule)
     docker exec -it $CONTAINER php artisan schedule:run
     ;;
+  changeuser)
+    docker exec -it $CONTAINER chown -R $(whoami):$(whoami) /var/www
+    ;;
+  trustfolder)
+    docker exec -it $CONTAINER git config --global --add safe.directory /var/www
+    ;;
   logs)
     docker exec -it $CONTAINER tail -f storage/logs/laravel.log
     ;;

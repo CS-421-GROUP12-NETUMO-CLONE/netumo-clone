@@ -12,6 +12,9 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
+# Make Git trust the folder
+RUN git config --global --add safe.directory /var/www
+
 # Copy only composer files first (for better layer caching)
 COPY composer.json composer.lock ./
 
