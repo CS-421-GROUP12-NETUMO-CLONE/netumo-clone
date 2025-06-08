@@ -22,8 +22,6 @@ services:
             context: .
             dockerfile: docker/php/Dockerfile
         container_name: netumo_app1
-        volumes:
-            - .:/var/www
         env_file:
             - .env
         networks:
@@ -43,8 +41,6 @@ services:
             context: .
             dockerfile: docker/php/Dockerfile
         container_name: netumo_app2
-        volumes:
-            - .:/var/www
         env_file:
             - .env
         networks:
@@ -60,8 +56,6 @@ services:
             dockerfile: docker/php/Dockerfile
         container_name: netumo_worker
         command: php artisan queue:work --tries=3
-        volumes:
-            - .:/var/www
         env_file:
             - .env
         networks:
@@ -77,8 +71,6 @@ services:
             dockerfile: docker/php/Dockerfile
         container_name: netumo_scheduler
         command: sh -c "while [ true ]; do php artisan schedule:run --verbose --no-interaction & sleep 60; done"
-        volumes:
-            - .:/var/www
         env_file:
             - .env
         networks:
