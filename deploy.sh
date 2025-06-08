@@ -25,6 +25,8 @@ function help() {
   echo "  logs               Tail Laravel log"
   echo "  help               Show this help message"
   echo "  install            Running: composer install --no-dev --optimize-autoloader"
+  echo "  clean-vite         Removing old build in container..."
+  echo "  vite               Build Vite assets on host and copy to the container"
 }
 
 case "$1" in
@@ -61,6 +63,16 @@ case "$1" in
     ;;
   logs)
     docker exec -it $CONTAINER tail -f storage/logs/laravel.log
+    ;;
+  clean-vite)
+    echo "Removing old build in container..."
+    docker exec -it $CONTAINER rm -rf /var/www/public/build
+    ;;
+  vite)
+    echo "Building Vite assets on host..."
+    npm install && npm run build
+    echo "Copying public/build to Docker container..."
+    docker cp public/build $CONTAINER:/var/www/public
     ;;
   help|*)
     help
