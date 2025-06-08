@@ -81,6 +81,7 @@ case "$1" in
   addpermission)
     echo "Change permission to bootstrap file"
     docker exec -it $CONTAINER chown -R www-data:www-data storage bootstrap/cache
+    echo "Permission changed to container $CONTAINER"
     ;;
   help|*)
     help
