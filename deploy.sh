@@ -26,7 +26,11 @@ function help() {
   echo "  help               Show this help message"
   echo "  install            Running: composer install --no-dev --optimize-autoloader"
   echo "  clean-vite         Removing old build in container..."
+  echo "  clean-vite         Removing the old build"
   echo "  vite               Build Vite assets on host and copy to the container"
+  echo "  addpermission      Add permission to storage and bootstrap/cache folder"
+  echo "  changeuser         Change ownership"
+  echo "  trustfolder         Trust user ownership"
 }
 
 case "$1" in
@@ -74,7 +78,7 @@ case "$1" in
     echo "Copying public/build to Docker container..."
     docker cp public/build $CONTAINER:/var/www/public
     ;;
-  chmod)
+  addpermission)
     echo "Change permission to bootstrap file"
     docker exec -it $CONTAINER chown -R www-data:www-data storage bootstrap/cache
     ;;
