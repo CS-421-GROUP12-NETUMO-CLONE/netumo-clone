@@ -12,15 +12,20 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy existing application
+# Copy only composer files first (for better layer caching)
+COPY composer.json composer.lock ./
+
+# Install dependencies (without autoloader optimization)
+RUN composer install --no-dev --no-autoloader --no-scripts
+
+# Copy the rest of the application
 COPY . .
 
-# Install dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Now run the optimized autoloader
+RUN composer dump-autoload --optimize
 
-# Permissions (optional, but often needed)
+# Permissions
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage /var/www/bootstrap/cache
 
-# Start PHP-FPM
 CMD ["php-fpm"]
