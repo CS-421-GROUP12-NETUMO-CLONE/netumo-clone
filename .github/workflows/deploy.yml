@@ -32,4 +32,6 @@ jobs:
             cd netumo-clone || git clone https://github.com/CS-421-GROUP12-NETUMO-CLONE/netumo-clone.git && cd netumo-clone
             git fetch origin
             git reset --hard origin/master
+            [ -f .env ] || cp .env.example .env
+
 
