@@ -38,11 +38,55 @@ jobs:
           script: |
             set -e
             if [ ! -d "netumo-clone" ]; then
-            git clone https://github.com/CS-421-GROUP12-NETUMO-CLONE/netumo-clone.git
+              git clone https://github.com/CS-421-GROUP12-NETUMO-CLONE/netumo-clone.git
             fi
             cd netumo-clone
             git fetch origin
             git reset --hard origin/master
+
+            docker-compose pull
+            docker-compose down
+            docker-compose build --no-cache
+            docker-compose up -d
+
+            sleep 15
+
+            CONTAINER=$(docker ps --format '{{.Names}}' | grep -E 'app[0-9]*|php' | head -n 1)
+
+            if [ -z "$CONTAINER" ]; then
+              echo "Could not find a running app container (name containing 'app')."
+              exit 1
+            fi
+
+            DB_BACKUP_DIR="./database_backups"
+            mkdir -p $DB_BACKUP_DIR
+            BACKUP_FILE="$DB_BACKUP_DIR/backup_$(date +%Y%m%d_%H%M%S).sql.gz"
+
+            echo "Creating database backup..."
+            docker-compose exec -T db sh -c "mysqldump -u '${{ secrets.DB_USER }}' -p'${{ secrets.DB_PASS }}' '${{ secrets.DB_NAME }}' | gzip" > $BACKUP_FILE
+
+            if [ ! -s "$BACKUP_FILE" ]; then
+              echo "Database backup failed!"
+              exit 1
+            fi
+
+            echo "Database backup created: $BACKUP_FILE"
+
+            docker-compose exec $CONTAINER php artisan migrate --force
+            docker-compose exec $CONTAINER php artisan storage:link
+            docker-compose exec $CONTAINER php artisan optimize:clear
+            docker-compose exec $CONTAINER php artisan optimize
+
+            echo "Setting up Supervisor for queue worker..."
+            sudo apt-get update
+            sudo apt-get install -y supervisor
+
+            sudo cp deploy/supervisor/netumo-worker.conf /etc/supervisor/conf.d/
+            sudo supervisorctl reread
+            sudo supervisorctl update
+            sudo supervisorctl restart netumo-worker:*
+
+            echo "Supervisor configured for queue worker"
 
       - name: Notify Slack on Success
         if: success()
