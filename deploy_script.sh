@@ -34,5 +34,7 @@ docker-compose exec $CONTAINER php artisan storage:link
 echo "Clearing caches..."
 docker-compose exec $CONTAINER php artisan optimize:clear
 docker-compose exec $CONTAINER php artisan optimize
+echo "Queue worker running..."
+docker-compose exec $CONTAINER php artisan queue:work
 
 echo "Deployment complete!"
