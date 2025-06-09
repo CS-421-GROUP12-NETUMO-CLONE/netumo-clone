@@ -16,13 +16,30 @@ jobs:
       - name: PHP Lint
         run: find . -type f -name "*.php" -exec php -l {} \;
 
+      - name: App Tests
+        run: |
+          cp .env.example .env
+          composer install --no-scripts --no-plugins
+          php artisan key:generate
+          php artisan test
+
       - name: Docker Hub Login
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Deploy on EC2
+      - name: Build, Tag, and Push Images
+        run: |
+          IMAGES=("app1" "app2" "worker" "scheduler")
+          for NAME in "${IMAGES[@]}"; do
+            echo "Building $NAME image..."
+            docker build -t edibily12/netumo_${NAME}:latest -f docker/php/Dockerfile .
+            echo "📦 Pushing $NAME to Docker Hub..."
+            docker push edibily12/netumo_${NAME}:latest
+          done
+
+      - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -31,7 +48,31 @@ jobs:
           script: |
             cd netumo-clone || git clone https://github.com/CS-421-GROUP12-NETUMO-CLONE/netumo-clone.git && cd netumo-clone
             git fetch origin
-            git reset --hard origin/master
-            [ -f .env ] || cp .env.example .env
+            git reset --hard origin/main
+            chmod +x deploy_script.sh
+            ./deploy_script.sh
 
+            echo "Cleaning up dangling images..."
+            docker image prune -af
 
+      - name: Notify Slack on Success
+        if: success()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_USERNAME: 'CI/CD Bot'
+          SLACK_COLOR: good
+          SLACK_ICON_EMOJI: ':rocket:'
+          SLACK_TITLE: 'Deployment Succeeded'
+          SLACK_MESSAGE: 'Netumo clone successfully deployed to EC2 from `master` branch.'
+
+      - name: Notify Slack on Failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_USERNAME: 'CI/CD Bot'
+          SLACK_COLOR: danger
+          SLACK_ICON_EMOJI: ':x:'
+          SLACK_TITLE: 'Deployment Failed'
+          SLACK_MESSAGE: 'Netumo clone deployment to EC2 failed on `master` branch.'
