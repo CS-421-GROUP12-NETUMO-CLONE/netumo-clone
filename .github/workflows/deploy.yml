@@ -46,7 +46,11 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd netumo-clone || git clone https://github.com/CS-421-GROUP12-NETUMO-CLONE/netumo-clone.git && cd netumo-clone
+            set -e
+            if [ ! -d "netumo-clone" ]; then
+            git clone https://github.com/CS-421-GROUP12-NETUMO-CLONE/netumo-clone.git
+            fi
+            cd netumo-clone
             git fetch origin
             git reset --hard origin/master
             chmod +x deploy_script.sh

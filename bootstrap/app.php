@@ -35,7 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
             $targets->each(function ($target){
                 CheckTargetStatus::dispatch($target);
             });
-        })->everyFiveMinutes();
+        })->everyMinute();
 
         $schedule->command('check:certificates')
             ->daily()
