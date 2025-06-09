@@ -52,6 +52,12 @@ jobs:
             chmod +x deploy_script.sh
             ./deploy_script.sh
 
+
+      - name: Cleanup on failure
+        if: failure()
+        run: |
+          docker system prune -f
+
       - name: Notify Slack on Success
         if: success()
         uses: rtCamp/action-slack-notify@v2
