@@ -15,3 +15,7 @@ COPY . .
 
 # Install Laravel dependencies during image build
 RUN composer install --no-dev --optimize-autoloader
+
+# Set permissions for Laravel writable dirs
+RUN chown -R www-data:www-data storage bootstrap/cache
+
