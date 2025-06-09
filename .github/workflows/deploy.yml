@@ -52,9 +52,6 @@ jobs:
             chmod +x deploy_script.sh
             ./deploy_script.sh
 
-            echo "Cleaning up dangling images..."
-            docker image prune -af
-
       - name: Notify Slack on Success
         if: success()
         uses: rtCamp/action-slack-notify@v2
