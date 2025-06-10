@@ -45,7 +45,8 @@ class CheckCertificates extends Command
                     'type' => 'ssl',
                     'message' => $message
                 ]);
-                Notification::route('mail', 'edibilysamwely774@gmail.com')
+                Notification::route('mail', config('notifications.admin'))
+                    ->route('slack', config('notifications.slack'))
                     ->notify(new SendAlertNotification($message));
             }
 
@@ -56,7 +57,8 @@ class CheckCertificates extends Command
                     'type' => 'domain',
                     'message' => $message
                 ]);
-                Notification::route('mail', 'edibilysamwely774@gmail.com')
+                Notification::route('mail', config('notifications.admin'))
+                    ->route('slack', config('notifications.slack'))
                     ->notify(new SendAlertNotification($message));
             }
         }

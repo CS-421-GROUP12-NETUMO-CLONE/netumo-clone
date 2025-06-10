@@ -5,6 +5,7 @@ namespace App\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Notifications\Notification;
 
 class SendAlertNotification extends Notification implements ShouldQueue
@@ -26,7 +27,7 @@ class SendAlertNotification extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'slack'];
     }
 
     /**
@@ -37,6 +38,15 @@ class SendAlertNotification extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject('Monitoring Alert')
             ->line($this->message);
+    }
+
+    public function toSlack(object $notifiable): SlackMessage
+    {
+        return (new SlackMessage)
+            ->from(config('app.name', 'Monitoring Bot'))
+            ->to(config('services.slack.channel'))
+            ->error()
+            ->content($this->message);
     }
 
     /**

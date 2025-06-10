@@ -2,6 +2,9 @@
 /node_modules
 #/public/build
 /public/hot
+/deploy/backup_script.sh
+/deploy/dev.yml
+/deploy/push-images.sh
 /public/storage
 /storage/*.key
 /storage/pail

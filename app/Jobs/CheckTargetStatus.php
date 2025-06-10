@@ -59,13 +59,14 @@ class CheckTargetStatus implements ShouldQueue
             ->latest()->take(2)->pluck('status_code')->all();
 
         if ($failures === [0, 0]) {
-            $message = "Downtime alert: {$this->target->url} failed twice in a row.";
+            $message = "Downtime alert: {$this->target->url} failed twice in a row. at ".now()->format('D d M, Y H:s');
             Alert::firstOrCreate([
                 'target_id' => $this->target->id,
                 'type' => 'downtime',
                 'message' => $message
             ]);
-            Notification::route('mail', 'admin@example.com')
+            Notification::route('mail', env('MAIL_TO_ADDRESS'))
+                ->route('slack', config('services.slack.webhook_url'))
                 ->notify(new SendAlertNotification($message));
         }
     }

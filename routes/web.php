@@ -1,11 +1,22 @@
 <?php
 
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
+Route::get('/test-notification', function() {
+    $message = \Illuminate\Support\Str::random(20).now();
+
+    Notification::route('mail', env('MAIL_TO_ADDRESS'))
+        ->route('slack', config('services.slack.webhook_url'))
+        ->notify(new \App\Notifications\SendAlertNotification($message));
+
+    return "Notification sent: ".$message;
+});
 
 Route::get('/api/documentation', function () {
     return view('l5-swagger::index');

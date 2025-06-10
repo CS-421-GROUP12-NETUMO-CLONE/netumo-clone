@@ -31,17 +31,5 @@ docker-compose exec "$CONTAINER" php artisan storage:link
 docker-compose exec "$CONTAINER" php artisan optimize:clear
 docker-compose exec "$CONTAINER" php artisan optimize
 
-# Supervisor Setup
-echo "Setting up Supervisor for queue worker..."
-if ! command -v supervisorctl >/dev/null; then
-  sudo apt-get update
-  sudo apt-get install -y supervisor
-fi
-
-sudo cp deploy/supervisor/netumo-worker.conf /etc/supervisor/conf.d/
-sudo supervisorctl reread
-sudo supervisorctl update
-sudo supervisorctl restart netumo-worker:*
-
 echo "Deployment completed successfully"
 exit 0

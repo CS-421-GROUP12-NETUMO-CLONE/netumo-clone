@@ -36,4 +36,7 @@ GET http://localhost:8000/api/history/2
 ### All triggered alerts
 GET http://localhost:8000/api/alerts
 
+###test notification
+GET http://localhost:8000/test-notification
+
 

@@ -35,10 +35,10 @@ return Application::configure(basePath: dirname(__DIR__))
             $targets->each(function ($target){
                 CheckTargetStatus::dispatch($target);
             });
-        })->everyMinute();
+        })->everyFiveMinutes();
 
         $schedule->command('check:certificates')
             ->daily()
-            ->emailOutputTo('admin@test.com');
+            ->emailOutputTo('edibilysamwely774@gmail.com');
     })
     ->create();
